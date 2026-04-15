@@ -1,0 +1,188 @@
+﻿<Window x:Class="AppVorlage.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AppVorlage"
+        Style="{StaticResource MaterialDesignWindow}"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        Width="1400"
+        Height="800"
+        MinWidth="1200"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        KeyDown="Window_KeyDown">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部搜索区 -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MinWidth="70"/>
+                <ColumnDefinition Width="1.1*" MinWidth="110"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1.5*" MinWidth="150"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0.9*" MinWidth="130"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ID -->
+            <TextBox Grid.Column="0"
+             Margin="0,0,30,0"
+             Height="45"
+             x:Name="IdTextBox"
+             Padding="8,0,0,6"
+             VerticalContentAlignment="Bottom"
+             materialDesign:HintAssist.HelperText="Mitarbeiter-ID eingeben"
+             materialDesign:HintAssist.Hint="ID">
+                <TextBox.Text>
+                    <Binding Path="EmployeeIdKeyword"
+                     UpdateSourceTrigger="PropertyChanged"/>
+                </TextBox.Text>
+            </TextBox>
+
+            <!-- Name -->
+            <TextBox Grid.Column="1"
+             Margin="0,0,20,0"
+             Height="45"
+             x:Name="NameTextBox"
+             Padding="8,0,0,6"
+             VerticalContentAlignment="Bottom"
+             materialDesign:HintAssist.HelperText="Mitarbeiter-Name eingeben"
+             materialDesign:HintAssist.Hint="Name">
+                <TextBox.Text>
+                    <Binding Path="NameKeyword"
+                     UpdateSourceTrigger="PropertyChanged"/>
+                </TextBox.Text>
+            </TextBox>
+
+            <!-- JobTitle label -->
+            <TextBlock Grid.Column="2"
+               Margin="0,12,8,0"
+               VerticalAlignment="Center"
+               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+               Text="Jobtitle:" />
+
+            <!-- JobTitle ComboBox -->
+            <ComboBox Grid.Column="3"
+              Margin="0,0,30,0"
+              Height="45"
+              FontSize="16"
+              KeyDown="Delete_KeyDown"
+              ItemsSource="{Binding JobTitles}"
+              SelectedItem="{Binding SelectedJobTitle}"
+              Padding="8,0,0,6"
+              VerticalContentAlignment="Bottom" />
+
+            <!-- HireDate label -->
+            <TextBlock Grid.Column="4"
+               Margin="0,12,8,0"
+               VerticalAlignment="Center"
+               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+               Text="Beschäftigungsbeginn:" />
+
+            <!-- HireDate -->
+            <DatePicker Grid.Column="5"
+                Margin="0,0,50,0"
+                Height="45"
+                FontSize="16"
+                PreviewKeyDown="SearchControl_PreviewKeyDown"
+                SelectedDate="{Binding HireDateFrom}"
+                Padding="8,0,0,6"
+                VerticalContentAlignment="Bottom" />
+
+            <!-- Search Button -->
+            <Button Grid.Column="6"
+            Margin="0,0,28,0"
+            Width="100"
+            Height="45"
+            Content="Search"
+            Style="{StaticResource MaterialDesignPaperLightButton}"
+            Click="Search_Click"
+            Foreground="#FF8EDC39"
+            BorderBrush="#FF8EDC39" />
+
+            <!-- Export Button -->
+            <Button Grid.Column="7"
+            Width="120"
+            Height="45"
+            Content="Exportieren"
+            Click="ExportExcel_Click"
+            Style="{StaticResource MaterialDesignPaperLightButton}"
+            Foreground="#FF5DAA5B"
+            BorderBrush="#FF5DAA5B" />
+        </Grid>
+
+        <!-- 结果区 -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Employees}"
+                  AutoGenerateColumns="False" Margin="0,10,0,0"
+                  SelectionMode="Extended"
+                  SelectionUnit="CellOrRowHeader"
+                  CanUserDeleteRows="False"
+                  CanUserReorderColumns="False"
+                  ColumnHeaderHeight="40"
+                  CanUserAddRows="False"
+                  RowHeight="35"
+                  FontSize="16">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow"
+                    BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="Background" Value="#FFD9ECFF"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="80">
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox IsChecked="{Binding DataContext.SelectAll,
+                                      RelativeSource={RelativeSource AncestorType=DataGrid},
+                                      Mode=TwoWay}"  />
+                    </DataGridTemplateColumn.Header>
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected,
+                                          Mode=TwoWay,
+                                          UpdateSourceTrigger=PropertyChanged}"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+
+                <DataGridTextColumn Header="ID"
+                            Binding="{Binding BusinessEntityID}"
+                            Width="150" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Vorname"
+                            Binding="{Binding FirstName}"
+                            Width="170" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Nachname"
+                            Binding="{Binding LastName}"
+                            Width="200" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Jobtitle"
+                            Binding="{Binding JobTitle}"
+                            Width="350" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Beschäftigungsbeginn"
+                            Binding="{Binding HireDate, StringFormat={}{0:yyyy-MM-dd}}"
+                            Width="200" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>
